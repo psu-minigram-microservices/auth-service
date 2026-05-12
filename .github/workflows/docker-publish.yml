@@ -49,4 +49,6 @@ jobs:
           context: backend/Minigram
           file: backend/Minigram/Minigram.Auth/Dockerfile
           push: true
-          tags: ghcr.io/psu-minigram-microservices/auth-service:${{ steps.tag.outputs.value }}
+          tags: |
+            ghcr.io/psu-minigram-microservices/auth-service:${{ steps.tag.outputs.value }}
+            ghcr.io/psu-minigram-microservices/auth-service:latest
