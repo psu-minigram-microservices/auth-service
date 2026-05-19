@@ -1,16 +1,19 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG TARGETARCH
 WORKDIR /src
 
 COPY Minigram.Auth/Minigram.Auth.csproj Minigram.Auth/
 COPY Minigram.Core/Minigram.Core.csproj Minigram.Core/
 
-RUN dotnet restore Minigram.Auth/Minigram.Auth.csproj --force 
+RUN arch=$([ "$TARGETARCH" = "amd64" ] && echo "x64" || echo "$TARGETARCH") && \
+    dotnet restore Minigram.Auth/Minigram.Auth.csproj -a $arch --force
 
 COPY Minigram.Core/ Minigram.Core/
 COPY Minigram.Auth/ Minigram.Auth/
 
 WORKDIR /src/Minigram.Auth
-RUN dotnet publish -c Release -o /app
+RUN arch=$([ "$TARGETARCH" = "amd64" ] && echo "x64" || echo "$TARGETARCH") && \
+    dotnet publish -c Release -o /app -a $arch --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
